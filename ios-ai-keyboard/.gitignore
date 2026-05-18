@@ -1,0 +1,26 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad/
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Swift Package Manager
+.swiftpm/
+Packages/
+Package.resolved
+
+# CocoaPods / Carthage (não usados aqui, mas reservados)
+Pods/
+Carthage/Build/
+
+# macOS
+.DS_Store
+
+# Segredos
+.env
+*.p8
+*.p12
+*.mobileprovision
