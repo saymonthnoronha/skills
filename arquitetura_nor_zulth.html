@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOR/ZULTH — Arquitetura viva</title>
+<style>
+  body{margin:0;background:#0f1115;color:#e7e9ee;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:16px 22px;border-bottom:1px solid #232733;position:sticky;top:0;background:rgba(15,17,21,.92);backdrop-filter:blur(6px);z-index:5}
+  header h1{margin:0;font-size:17px}
+  header p{margin:4px 0 0;color:#9aa3b2;font-size:12px}
+  .legend{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;font-size:11px;color:#9aa3b2}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .wrap{padding:18px;overflow:auto}
+  .mermaid{background:#11141a;border:1px solid #232733;border-radius:12px;padding:16px}
+  footer{padding:14px 22px;color:#9aa3b2;font-size:11px;border-top:1px solid #232733}
+  a{color:#8fc1ec}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧭 NOR/ZULTH — Arquitetura viva</h1>
+  <p>Como tudo se conecta e onde está cada parte · snapshot 2026-06-17</p>
+  <div class="legend">
+    <span><i class="dot" style="background:#7fd49b"></i>ativo</span>
+    <span><i class="dot" style="background:#f0d27a"></i>atenção</span>
+    <span><i class="dot" style="background:#f09a9a"></i>quebrado/down</span>
+    <span><i class="dot" style="background:#8fc1ec"></i>ação/referência</span>
+    <span><i class="dot" style="background:#cfd5e0"></i>inventário/marcado</span>
+  </div>
+</header>
+<div class="wrap">
+<pre class="mermaid">
+flowchart TB
+  classDef ok fill:#7fd49b,color:#10121a,stroke:#1f7a3d,stroke-width:1px
+  classDef warn fill:#f0d27a,color:#10121a,stroke:#8a6d1a,stroke-width:1px
+  classDef bad fill:#f09a9a,color:#10121a,stroke:#8a2b2b,stroke-width:1px
+  classDef info fill:#8fc1ec,color:#10121a,stroke:#1f4f7a,stroke-width:1px
+  classDef neutral fill:#cfd5e0,color:#10121a,stroke:#3a3f4b,stroke-width:1px
+
+  subgraph INTF["Interface / Captura"]
+    CL["Claude.app<br/>leveldb (vivo)"]:::ok
+    CAP["ZULTH realtime_capture<br/>PID 1135"]:::ok
+    OC["OpenClaw (planejado)"]:::info
+  end
+
+  subgraph RT["Runtime LLM (local)"]
+    MLX1["mlx :11435<br/>Qwen2.5-7B-4bit"]:::ok
+    MLX2["mlx :11436 (caido)"]:::bad
+    OLL["Ollama :11434"]:::ok
+  end
+
+  subgraph GW["Gateway"]
+    CADDY["Caddy :8080"]:::ok
+    TUN["cloudflared tunnel"]:::ok
+  end
+
+  subgraph SVC["Servicos MCP (host)"]
+    NOR["nor-mcp :5300"]:::ok
+    GEN["genesis :5301"]:::ok
+    ZUL["zulth-api :5302"]:::ok
+    GLY["glypher :5303"]:::ok
+    STB["standby :5310"]:::ok
+  end
+
+  subgraph SAFE["Heimdall L3 (seguranca)"]
+    HEI["heimdall-l3<br/>Apple container 192.168.64.2<br/>porta nao exposta"]:::warn
+  end
+
+  subgraph MEM["Memoria / Vetores"]
+    GLI["GlifoDB<br/>canonico (Merkle + k)"]:::info
+    QD["Qdrant :6333<br/>249k pts (primario)"]:::ok
+    NEO["Neo4j :7474/7687<br/>DB2 grafo"]:::ok
+    CH1["chroma neo4j-world<br/>128k (2.5GB)"]:::warn
+    CH2["chroma ZULTH_UNIFIED<br/>14 colecoes"]:::warn
+    CHX["6 chromas vazios/teste<br/>(marcados)"]:::neutral
+    RED["Redis :6379"]:::ok
+    PG["Postgres :5432"]:::ok
+  end
+
+  subgraph VMS["VMs cognitivas"]
+    V1["vm1-kappa :8300<br/>qwen2.5-coder:32b"]:::ok
+    V2["vm2-paper :8301<br/>qwen3:8b"]:::ok
+    V3["vm-stoa :8302 (down)"]:::bad
+    V4["vm-cc :8303 (down)"]:::bad
+    VOC["vm-openclaw x2 (down)"]:::bad
+    UTM["UTM x2 macOS (novas)"]:::neutral
+  end
+
+  subgraph CFE["Exposicao Cloudflare"]
+    NAPP["mcp.nor.app<br/>(NOR remoto)"]:::ok
+    STOA["stoa-mcp.*.workers.dev"]:::ok
+  end
+
+  subgraph EXP["Corpus / Exports"]
+    EX["Exports Claude/ChatGPT/Perplexity"]:::warn
+    CKP["8 ingest checkpoints"]:::ok
+  end
+
+  CL --> CAP --> NOR
+  CL -. "leveldb-sync (QUEBRADO)" .-> HEI
+  CAP --> HEI
+  HEI -. "intercepted:0" .-> QD
+  OC -. planejado .-> NOR
+
+  NOR --> MLX1
+  NOR --> OLL
+  NOR --> GLI
+  NOR --> QD
+  NOR --> NEO
+  NOR --> RED
+  NOR --> PG
+  NOR --> V1 & V2 & V3 & V4
+
+  GLI -->|DB2| NEO
+  GLI -->|busca densa| QD
+  QD <-. "medir sobreposicao" .-> CH1
+  EX --> CKP --> QD
+
+  NOR --> CADDY --> TUN
+  TUN --> NAPP
+  TUN --> STOA
+</pre>
+</div>
+<footer>Renderizado com Mermaid. Fonte portável em <b>arquitetura_nor_zulth.mmd</b> — cola no conector Mermaid Chart, GitHub, ou Lucid/Figma quando voltarem. Setas pontilhadas = fluxo quebrado/a verificar.</footer>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>
