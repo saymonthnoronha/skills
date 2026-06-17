@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOR/ZULTH — Board de Consolidação (jun/2026)</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --ink:#e7e9ee; --muted:#9aa3b2;
+    --ok:#1f7a3d; --warn:#8a6d1a; --bad:#8a2b2b; --info:#1f4f7a; --neutral:#3a3f4b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 22px;border-bottom:1px solid #232733;position:sticky;top:0;background:rgba(15,17,21,.92);backdrop-filter:blur(6px);z-index:10}
+  header h1{margin:0;font-size:18px;letter-spacing:.2px}
+  header p{margin:4px 0 0;color:var(--muted);font-size:12px}
+  .legend{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:20px}
+  .col{background:var(--panel);border:1px solid #232733;border-radius:12px;padding:12px 12px 16px;min-height:120px}
+  .col h2{margin:2px 4px 12px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);display:flex;justify-content:space-between}
+  .col h2 span.count{color:#5b6270}
+  .stack{display:flex;flex-direction:column;gap:10px}
+  .note{position:relative;border-radius:8px;padding:10px 12px;color:#10121a;font-weight:500;
+        box-shadow:0 2px 6px rgba(0,0,0,.35);cursor:default;transform:rotate(var(--r,0deg))}
+  .note small{display:block;font-weight:600;opacity:.65;font-size:10px;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+  .ok{background:#7fd49b} .warn{background:#f0d27a} .bad{background:#f09a9a}
+  .info{background:#8fc1ec} .neutral{background:#cfd5e0}
+  .tag{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;opacity:.5;text-transform:uppercase}
+  footer{padding:16px 22px;color:var(--muted);font-size:11px;border-top:1px solid #232733}
+  .note:nth-child(3n){--r:-.5deg}.note:nth-child(3n+1){--r:.6deg}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧭 NOR/ZULTH — Board de Consolidação</h1>
+  <p>Snapshot 2026-06-17 · agrupamento de tudo levantado no diagnóstico · gerado local-first</p>
+  <div class="legend">
+    <span><i class="dot" style="background:#7fd49b"></i>OK / ativo</span>
+    <span><i class="dot" style="background:#f0d27a"></i>atenção</span>
+    <span><i class="dot" style="background:#f09a9a"></i>quebrado / cortar</span>
+    <span><i class="dot" style="background:#8fc1ec"></i>ação / decisão</span>
+    <span><i class="dot" style="background:#cfd5e0"></i>inventário</span>
+  </div>
+</header>
+
+<main class="board" id="board"></main>
+
+<footer>Board estático (post-its). Próximo passo sugerido: Fase 0 — triagem da fila de 129 jobs + dedup dos exports. Lucid/FigJam podem renderizar isto quando voltarem.</footer>
+
+<script>
+const groups = [
+ {t:"🖥️ Infra & Serviços", n:[
+   ["mlx :11435 — NOR full-time","ativo","ok"],
+   ["mlx :11436 — 2ª instância caída","corrigir","bad"],
+   ["Heimdall L3 — roda mas porta não exposta","atenção","warn"],
+   ["ZULTH capture (PID 1135)","ativo","ok"],
+   ["Migração Ollama → MLX","decisão","info"],
+ ]},
+ {t:"📦 VMs & Containers", n:[
+   ["Lima: vm1-kappa, vm2-paper","ativo","ok"],
+   ["Lima down: vm-stoa, vm-cc, vm-openclaw ×2","atenção","warn"],
+   ["UTM: 2 VMs macOS (novas)","inventariar","neutral"],
+   ["Apple container: heimdall-l3 (sem GUI)","inventário","neutral"],
+   ["OrbStack(GUI)·Docker·Colima·Podman","inventário","neutral"],
+ ]},
+ {t:"🔌 MCPs", n:[
+   ["Manter: nor,genesis,zulth,glypher,kappa,cartografo","manter","ok"],
+   ["Cortar: test-mcp ×6, apidog ×4, everything","cortar","bad"],
+   ["Dedup: linear ×3, notion ×2, cloudflare ×2","unificar","info"],
+   ["Expor Cloudflare: 5300/5301/5302/5303","decisão","info"],
+ ]},
+ {t:"🧩 Skills", n:[
+   ["57 NOR + 4 Claude Code","inventário","neutral"],
+   ["Dedup: skill-creator/benchmark/artifacts","unificar","info"],
+   ["6 orquestradores competindo","unificar","info"],
+   ["Telemetria zerada (ROUTING-LOG vazio)","atenção","warn"],
+ ]},
+ {t:"🧱 Plugins", n:[
+   ["226 habilitados → curar set","decisão","info"],
+   ["6 já desabilitados","inventário","neutral"],
+ ]},
+ {t:"🧠 Corpus & Exports", n:[
+   ["ChatGPT export 82MB + PDF 18MB","ingerir","info"],
+   ["Claude HTMLs + zips (duplicados)","dedup","warn"],
+   ["Perplexity (em andamento)","verificar","warn"],
+   ["κ Qdrant: 249k pontos","ativo","ok"],
+   ["Busca κ OFFLINE (Heimdall+ChromaDB)","quebrado","bad"],
+   ["8 checkpoints de ingestão prontos","ativo","ok"],
+ ]},
+ {t:"🗂️ Fila de Jobs (129)", n:[
+   ["~20 auditorias de MCP duplicadas/stale","triagem","bad"],
+   ["stoa_* deploy (muitos)","triagem","warn"],
+   ["Cloudflare deploys (Pages/Workers)","triagem","info"],
+   ["start/build VMs","triagem","neutral"],
+   ["κ research: compressor/finetune/gate","manter?","info"],
+ ]},
+ {t:"🤖 Jarvis / Roadmap", n:[
+   ["JARVIS_ARCHITECTURE.md (L0–L8, A0–A5)","referência","neutral"],
+   ["Runbooks WWDC2026 (27) em ~/Projects/Runbooks","referência","neutral"],
+   ["Voz XTTS :5325 → fish-audio (MLX)","planejado","info"],
+ ]},
+ {t:"🔴 Pendências / Bugs", n:[
+   ["leveldb-sync race (FileNotFoundError)","corrigir","bad"],
+   ["Heimdall porta 8080/5300 sem listener","corrigir","bad"],
+   ["mlx-11436 caído","corrigir","bad"],
+   ["Downloads: exports duplicados","limpar","warn"],
+ ]},
+];
+const board=document.getElementById('board');
+for(const g of groups){
+  const col=document.createElement('div');col.className='col';
+  col.innerHTML=`<h2>${g.t}<span class="count">${g.n.length}</span></h2>`;
+  const stack=document.createElement('div');stack.className='stack';
+  for(const [txt,tag,cls] of g.n){
+    const d=document.createElement('div');d.className='note '+cls;
+    d.innerHTML=`<span class="tag">${tag}</span>${txt}`;
+    stack.appendChild(d);
+  }
+  col.appendChild(stack);board.appendChild(col);
+}
+</script>
+</body>
+</html>
