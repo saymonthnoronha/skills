@@ -46,7 +46,7 @@
 
 <main class="board" id="board"></main>
 
-<footer>Board estático (post-its). Próximo passo sugerido: Fase 0 — triagem da fila de 129 jobs + dedup dos exports. Lucid/FigJam podem renderizar isto quando voltarem.</footer>
+<footer>Board estático (post-its) · 10 grupos. <b>REGRA:</b> nada é descartado antes de vetorizado e antes dos agentes serem ativados — itens só MARCADOS para revisão. Snapshot 2026-06-17.</footer>
 
 <script>
 const groups = [
@@ -87,6 +87,17 @@ const groups = [
    ["κ Qdrant: 249k pontos","ativo","ok"],
    ["Busca κ OFFLINE (Heimdall+ChromaDB)","quebrado","bad"],
    ["8 checkpoints de ingestão prontos","ativo","ok"],
+ ]},
+ {t:"🗄️ Bancos Vetoriais — MARCADO (não descartar)", n:[
+   ["Qdrant 249k pts (primário, 8.5GB)","ativo","ok"],
+   ["GlifoDB — canônico próprio (Merkle + κ)","referência","info"],
+   ["Neo4j — DB2 grafo (formalizado)","ativo","ok"],
+   ["chroma neo4j-world 128k (2.5GB) — REAL","revisar","warn"],
+   ["chroma ZULTH_UNIFIED — 14 coleções","revisar","warn"],
+   ["6 chromas vazios/teste — aguardam agentes","marcado","neutral"],
+   ["embeddings .jsonl soltos (~200MB)","revisar","neutral"],
+   ["medir sobreposição Qdrant × Chroma 128k","ação","info"],
+   ["GlifoDB: 16 módulos órfãos (código morto)","revisar","neutral"],
  ]},
  {t:"🗂️ Fila de Jobs (129)", n:[
    ["~20 auditorias de MCP duplicadas/stale","triagem","bad"],
