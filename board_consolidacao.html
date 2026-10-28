@@ -34,7 +34,7 @@
 <body>
 <header>
   <h1>🧭 NOR/ZULTH — Board de Consolidação</h1>
-  <p>Snapshot 2026-06-17 · agrupamento de tudo levantado no diagnóstico · gerado local-first</p>
+  <p>Snapshot jun/2026 · atualizado set/2026 (delta do BACKLOG v6 + DECISIONS) · local-first</p>
   <div class="legend">
     <span><i class="dot" style="background:#7fd49b"></i>OK / ativo</span>
     <span><i class="dot" style="background:#f0d27a"></i>atenção</span>
@@ -46,10 +46,22 @@
 
 <main class="board" id="board"></main>
 
-<footer>Board estático (post-its) · 10 grupos. <b>REGRA:</b> nada é descartado antes de vetorizado e antes dos agentes serem ativados — itens só MARCADOS para revisão. Snapshot 2026-06-17.</footer>
+<footer>Board estático (post-its) · 12 grupos. <b>REGRA:</b> nada é descartado antes de vetorizado e antes dos agentes serem ativados — itens só MARCADOS para revisão. Base jun/2026 + delta set/2026. NOR MCP offline no momento da atualização — delta vem dos docs curados, não de sondagem ao vivo.</footer>
 
 <script>
 const groups = [
+ {t:"🔄 Atualização jun→set/2026 (delta)", n:[
+   ["Ciclo ativo: MONITORAMENTO v6 (28/ago) · M1–M10","novo","info"],
+   ["M1 Auditoria dos 64 MCPs (prazo 04/set)","em curso","warn"],
+   ["M2 nor-mcp → spec MCP stateless 2026-07-28","em curso","info"],
+   ["M3 Baseline κ mensurável (LongMemEval/LoCoMo)","em curso","info"],
+   ["DEC-003: ONR Locator (matrícula→endereço)","decidido","ok"],
+   ["DEC-002: correção científica κ · Três Gaps RETRATADO","decidido","ok"],
+   ["NOR MCP cresceu ~69→90+ tools (session/git/python)","evoluiu","ok"],
+   ["~/Library/NORmAIs: organização canônica concluída","concluído","ok"],
+   ["+1 skill nova: nor-research (58 total)","novo","ok"],
+   ["ZULTH_CONSCIOUSNESS +121 commits (snapshot diário vivo)","ativo","ok"],
+ ]},
  {t:"🖥️ Infra & Serviços", n:[
    ["mlx :11435 — NOR full-time","ativo","ok"],
    ["mlx :11436 — 2ª instância caída","corrigir","bad"],
@@ -71,7 +83,7 @@ const groups = [
    ["Expor Cloudflare: 5300/5301/5302/5303","decisão","info"],
  ]},
  {t:"🧩 Skills", n:[
-   ["57 NOR + 4 Claude Code","inventário","neutral"],
+   ["58 NOR (+nor-research) + 4 Claude Code","inventário","neutral"],
    ["Dedup: skill-creator/benchmark/artifacts","unificar","info"],
    ["6 orquestradores competindo","unificar","info"],
    ["Telemetria zerada (ROUTING-LOG vazio)","atenção","warn"],
